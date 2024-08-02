@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:routetracking/service/location_service.dart';
+import 'package:routetracking/core/Service/location_service.dart';
 
 class CustomGoogleMap extends StatefulWidget {
   const CustomGoogleMap({super.key});
@@ -11,47 +11,43 @@ class CustomGoogleMap extends StatefulWidget {
 
 class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late CameraPosition initialCameraPosition;
-  late GoogleMapController? googleMapController;
+ late GoogleMapController googleMapController;
   late LocationService locationService;
   bool isfirstcall = false;
   Set<Marker> markers = {};
   @override
   void initState() {
     initialCameraPosition = const CameraPosition(
-        target: LatLng(30.022588668943467, 31.28486180995797), zoom: 12);
+        target: LatLng(30.022588668943467, 31.28486180995797), zoom: 1);
     locationService = LocationService();
-    updatemylocation();
+
     super.initState();
   }
 
   void updatemylocation() async {
-    await locationService.chechRequestLocationService();
-    var haspermission = await locationService.chechRequestLocationPermissoin();
-    if (haspermission) {
-      locationService.getLocationData(
-        (locationData) {
-          LatLng latLng =
-              LatLng(locationData.latitude!, locationData.longitude!);
-          setCameraPosition(latLng);
-          addmarker(latLng);
-        },
-      );
+    try {
+      var locationData = await locationService.getlocation();
+      LatLng latLng = LatLng(locationData.latitude!, locationData.longitude!);
+      setCameraPosition(latLng);
+      addmarker(latLng);
+    } on LocationServiceException catch (e) {
+      // TODO
+    } on LocationPermissionException catch (e) {
+      // TODO
+    } catch (e) {
+      print(e);
     }
   }
 
   void setCameraPosition(LatLng latlng) {
-    if (isfirstcall) {
-      CameraPosition cameraPosition = CameraPosition(target: latlng, zoom: 18);
-      googleMapController
-          ?.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-    } else {
-      googleMapController?.animateCamera(CameraUpdate.newLatLng(latlng));
-    }
+    CameraPosition cameraPosition = CameraPosition(target: latlng, zoom: 18);
+    googleMapController
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
 
   void addmarker(LatLng latlng) {
     Marker mymarker =
-        Marker(markerId: MarkerId("First Marker"), position: latlng);
+        Marker(markerId: MarkerId("First Marker"), position: latlng,);
     markers.add(mymarker);
     setState(() {});
   }
@@ -65,8 +61,9 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
       body: GoogleMap(
         initialCameraPosition: initialCameraPosition,
         markers: markers,
-        onMapCreated: (controller) {
+        onMapCreated: (controller)  {
           googleMapController = controller;
+           updatemylocation();
         },
       ),
     );
