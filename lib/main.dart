@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:routetracking/widget/custom_google_map.dart';
+import 'package:routetracking/feature/custom_google_map.dart';
 
 void main() {
   runApp(const MyApp());
