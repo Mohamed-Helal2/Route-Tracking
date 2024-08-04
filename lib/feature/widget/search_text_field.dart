@@ -1,18 +1,14 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:routetracking/core/Service/places_service.dart';
 import 'package:routetracking/core/helper/douce.dart';
 import 'package:routetracking/core/widget/custom_text_form_field.dart';
 import 'package:routetracking/feature/google_map_view/logic/cubit/googlemap_cubit.dart';
+import 'package:routetracking/feature/widget/search_result_view.dart';
 
 class searchTextField extends StatelessWidget {
   searchTextField({
     super.key,
-    //required this.textEditingController,
   });
-  // final TextEditingController textEditingController;
   final debouncer = Debouncer(
       delay: const Duration(milliseconds: 1000)); // 500 ms debounce time
 
@@ -25,88 +21,68 @@ class searchTextField extends StatelessWidget {
       child: Column(
         children: [
           AppTextFormField(
-              controller: context.read<GooglemapCubit>().textEditingController,
-              onChanged: (p0) {
-                if (p0.isNotEmpty) {
-                  debouncer(() {
-                    print("----- ${p0}");
-                    context.read<GooglemapCubit>().getprediction();
-                    // context.read<GooglemapCubit>().prediction_resulrt.clear();
-                  });
+            controller: context.read<GooglemapCubit>().textEditingController,
+            onChanged: (p0) {
+              if (p0.isNotEmpty) {
+                debouncer(() {
+                  context.read<GooglemapCubit>().getprediction();
+                });
+              }
+            },
+
+            // textEditingController,
+            hintText: "Search here",
+            // autofocus: true,
+            fillColor: Colors.white,
+            enabledBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(
+                Radius.circular(50),
+              ),
+            ),
+            suffixIcon: BlocBuilder<GooglemapCubit, GooglemapState>(
+              builder: (context, state) {
+                if (state is placeloading) {
+                  return const Padding(
+                    padding: EdgeInsets.all(12),
+                    child: CircularProgressIndicator(
+                      color: Colors.blue,
+                    ),
+                  );
+                } else if (context
+                    .read<GooglemapCubit>()
+                    .textEditingController
+                    .text
+                    .isNotEmpty) {
+                  return IconButton(
+                      onPressed: () {
+                        context
+                            .read<GooglemapCubit>()
+                            .textEditingController
+                            .clear();
+                        context.read<GooglemapCubit>().clearPredictions();
+                      },
+                      icon: const Icon(
+                        Icons.disabled_by_default_sharp,
+                        size: 30,
+                      ));
                 } else {
-                  //context.read<GooglemapCubit>().clearPredictions();
+                  return const Icon(
+                    Icons.search,
+                    size: 30,
+                  );
                 }
               },
-
-              // textEditingController,
-              hintText: "Search here",
-              // autofocus: true,
-              fillColor: Colors.white,
-              enabledBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(
-                  Radius.circular(50),
-                ),
-              ),
-              suffixIcon: const Icon(
-                Icons.mic,
-                size: 30,
-              ),
-              preficicon: IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(
-                  Icons.map_sharp,
-                  size: 30,
-                ),
-              )),
-          BlocBuilder<GooglemapCubit, GooglemapState>(
-            builder: (context, state) {
-              return ListView.separated(
-                itemCount:
-                    context.read<GooglemapCubit>().prediction_resulrt.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return context
-                          .read<GooglemapCubit>()
-                          .prediction_resulrt
-                          .isNotEmpty
-                      ? Text(
-                          '-- ${context.read<GooglemapCubit>().prediction_resulrt[index].description}')
-                      : null;
-                },
-                separatorBuilder: (context, index) {
-                  return Divider();
-                },
-              );
-            },
+            ),
+            preficicon: const Icon(
+              Icons.map_sharp,
+              size: 30,
+            ),
           ),
+          const SizedBox(
+            height: 2,
+          ),
+          const search_result_view(),
         ],
-      ),
-    );
-  }
-}
-
-class valdiate_button extends StatelessWidget {
-  const valdiate_button({
-    super.key,
-    required this.placesService,
-  });
-
-  final PlacesService placesService;
-
-  @override
-  Widget build(BuildContext context) {
-    return Positioned(
-      bottom: 10,
-      right: 3,
-      left: 3,
-      child: MaterialButton(
-        onPressed: () {
-          print("--- ${placesService.getpredictions(input: 'cairo')}");
-        },
-        child: Text('Search'),
-        color: Colors.red,
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:meta/meta.dart';
 import 'package:routetracking/core/Service/location_service.dart';
 import 'package:routetracking/core/Service/places_service.dart';
+import 'package:routetracking/core/helper/douce.dart';
 import 'package:routetracking/model/places_autocomplete_model/prediction.dart';
 
 import '../../../../model/places_autocomplete_model/places_autocomplete_model.dart';
@@ -20,6 +21,7 @@ class GooglemapCubit extends Cubit<GooglemapState> {
   GoogleMapController? googleMapController;
   Set<Marker> markers = {};
   List<Prediction> prediction_resulrt = [];
+  final debouncer = Debouncer(delay: const Duration(milliseconds: 1000));
   void updatemylocation() async {
     try {
       var locationData = await locationService.getlocation();
@@ -71,4 +73,5 @@ class GooglemapCubit extends Cubit<GooglemapState> {
     prediction_resulrt.clear();
     emit(placesucess(prediction: [])); // Emit an empty list to update the UI
   }
+
 }

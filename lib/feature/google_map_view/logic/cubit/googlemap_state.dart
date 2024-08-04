@@ -18,3 +18,5 @@ final class placefailure extends GooglemapState {
   placefailure({required this.placeauto});
   
 }
+final class teststate extends GooglemapState {}
+
