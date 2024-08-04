@@ -10,10 +10,12 @@ class AppTextFormField extends StatelessWidget {
   final bool? isobscureText;
   final Widget? suffixIcon;
   final Widget? preficicon;
-
+  final Function(String)? onChanged;
   final Color? fillColor;
   final Function(String?)? validator;
   final TextEditingController? controller;
+  final bool? autofocus;
+ final Function()? onEditingComplete;
   const AppTextFormField(
       {super.key,
       this.contentPadding,
@@ -27,7 +29,11 @@ class AppTextFormField extends StatelessWidget {
       this.fillColor,
       this.validator,
       this.controller,
-      this.preficicon});
+      this.preficicon,
+      this.onChanged,
+      this.autofocus,
+      this.onEditingComplete
+      });
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +41,13 @@ class AppTextFormField extends StatelessWidget {
         validator: (value) {
           return validator!(value);
         },
+        onTapOutside: (event) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        onEditingComplete:onEditingComplete ,
+        autofocus: autofocus ?? false,
         controller: controller,
+        onChanged: onChanged,
         decoration: InputDecoration(
             filled: true,
             fillColor: fillColor ?? Colors.grey,
