@@ -6,6 +6,7 @@ import 'package:routetracking/core/Service/location_service.dart';
 import 'package:routetracking/core/Service/places_service.dart';
 import 'package:routetracking/core/helper/douce.dart';
 import 'package:routetracking/model/places_autocomplete_model/prediction.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../../../model/places_autocomplete_model/places_autocomplete_model.dart';
 
@@ -22,6 +23,9 @@ class GooglemapCubit extends Cubit<GooglemapState> {
   Set<Marker> markers = {};
   List<Prediction> prediction_resulrt = [];
   final debouncer = Debouncer(delay: const Duration(milliseconds: 1000));
+  Uuid uuid = const Uuid();
+  String fe = const Uuid().v4();
+
   void updatemylocation() async {
     try {
       var locationData = await locationService.getlocation();
@@ -45,7 +49,7 @@ class GooglemapCubit extends Cubit<GooglemapState> {
 
   void addmarker(LatLng latlng) {
     Marker mymarker = Marker(
-      markerId: MarkerId("First Marker"),
+      markerId: const MarkerId("First Marker"),
       position: latlng,
     );
     markers.add(mymarker);
@@ -55,11 +59,11 @@ class GooglemapCubit extends Cubit<GooglemapState> {
   getprediction() async {
     clearPredictions();
     emit(placeloading());
-    final response =
-        await placesService.getpredictions(input: textEditingController.text);
+    final response = await placesService.getpredictions(
+        input: textEditingController.text, sessionToken: fe);
     response.fold(
       (l) {
-        clearPredictions();
+        //clearPredictions();
         emit(placefailure(placeauto: l));
       },
       (r) {
@@ -83,7 +87,7 @@ class GooglemapCubit extends Cubit<GooglemapState> {
     LatLng latLng = LatLng(response.result!.geometry!.location!.lat!,
         response.result!.geometry!.location!.lng!);
     await updatesearchlocation(latLng: latLng);
-
+    fe = uuid.v4();
     emit(placeDetailsSucess());
   }
 

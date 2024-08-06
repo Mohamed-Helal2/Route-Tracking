@@ -11,9 +11,12 @@ class PlacesService {
 
   Future<Either<PlacesAutocompleteModel, List<Prediction>>> getpredictions({
     required String input,
+    required String sessionToken
   }) async {
     final response = await dioConsumer.get('autocomplete/json',
-        queryparams: {"input": input, "key": ApiConstants.ApiKey});
+        queryparams: {"input": input,
+        'sessiontoken':sessionToken,
+         "key": ApiConstants.ApiKey});
     PlacesAutocompleteModel placesAutocompleteModel =
         PlacesAutocompleteModel.fromJson(response);
     if (placesAutocompleteModel.status == 'OK') {
