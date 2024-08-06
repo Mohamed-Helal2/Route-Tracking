@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:routetracking/core/networking/api_constant.dart';
 import 'package:routetracking/core/networking/dio_consumer.dart';
+import 'package:routetracking/model/place_details_model/place_details_model.dart';
 import 'package:routetracking/model/places_autocomplete_model/places_autocomplete_model.dart';
 import 'package:routetracking/model/places_autocomplete_model/prediction.dart';
 
@@ -22,5 +23,12 @@ class PlacesService {
       return right(prediction);
     }
     return left(placesAutocompleteModel);
+  }
+
+  Future<PlaceDetailsModel> getPlaceDetails({required String placeid}) async {
+    final response = await dioConsumer.get('details/json',
+        queryparams: {'key': ApiConstants.ApiKey, 'place_id': placeid});
+    PlaceDetailsModel placeDetailsModel = PlaceDetailsModel.fromJson(response);
+    return placeDetailsModel;
   }
 }

@@ -15,8 +15,7 @@ class AppTextFormField extends StatelessWidget {
   final Function(String?)? validator;
   final TextEditingController? controller;
   final bool? autofocus;
- final Function()? onEditingComplete;
-  const AppTextFormField(
+   const AppTextFormField(
       {super.key,
       this.contentPadding,
       this.focusedBorder,
@@ -32,8 +31,7 @@ class AppTextFormField extends StatelessWidget {
       this.preficicon,
       this.onChanged,
       this.autofocus,
-      this.onEditingComplete
-      });
+       });
 
   @override
   Widget build(BuildContext context) {
@@ -44,8 +42,7 @@ class AppTextFormField extends StatelessWidget {
         onTapOutside: (event) {
           FocusManager.instance.primaryFocus?.unfocus();
         },
-        onEditingComplete:onEditingComplete ,
-        autofocus: autofocus ?? false,
+         autofocus: autofocus ?? false,
         controller: controller,
         onChanged: onChanged,
         decoration: InputDecoration(

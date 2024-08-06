@@ -26,7 +26,7 @@ class GooglemapCubit extends Cubit<GooglemapState> {
     try {
       var locationData = await locationService.getlocation();
       LatLng latLng = LatLng(locationData.latitude!, locationData.longitude!);
-      setCameraPosition(latLng);
+      setCameraPosition(latLng, 15);
       addmarker(latLng);
     } on LocationServiceException catch (e) {
       // TODO
@@ -37,8 +37,8 @@ class GooglemapCubit extends Cubit<GooglemapState> {
     }
   }
 
-  void setCameraPosition(LatLng latlng) {
-    CameraPosition cameraPosition = CameraPosition(target: latlng, zoom: 18);
+  void setCameraPosition(LatLng latlng, double zoom) {
+    CameraPosition cameraPosition = CameraPosition(target: latlng, zoom: zoom);
     googleMapController
         ?.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
   }
@@ -74,4 +74,30 @@ class GooglemapCubit extends Cubit<GooglemapState> {
     emit(placesucess(prediction: [])); // Emit an empty list to update the UI
   }
 
+  Future<void> updatetonewsearchlocation({required String placeid}) async {
+    clearPredictions();
+    textEditingController.clear();
+    emit(placeDetailsLoading());
+
+    final response = await placesService.getPlaceDetails(placeid: placeid);
+    LatLng latLng = LatLng(response.result!.geometry!.location!.lat!,
+        response.result!.geometry!.location!.lng!);
+    await updatesearchlocation(latLng: latLng);
+
+    emit(placeDetailsSucess());
+  }
+
+  Future<void> updatesearchlocation({required LatLng latLng}) async {
+    try {
+      setCameraPosition(latLng, 12);
+      addmarker(latLng);
+      clearPredictions();
+    } on LocationServiceException catch (e) {
+      // TODO
+    } on LocationPermissionException catch (e) {
+      // TODO
+    } catch (e) {
+      print(e);
+    }
+  }
 }

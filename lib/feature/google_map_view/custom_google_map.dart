@@ -24,8 +24,20 @@ class CustomGoogleMap extends StatelessWidget {
                       context.read<GooglemapCubit>().updatemylocation();
                     },
                   ),
-                // SearchTest()
+                  // SearchTest()
                   searchTextField(),
+                  Positioned(
+                      bottom: 5,
+                      right: 2,
+                      left: 2,
+                      child: MaterialButton(
+                        onPressed: () {
+                          // context.read<GooglemapCubit>().getplacedetails(
+                          //     placeid: 'ChIJQ2IA1xSc4jARPUC_qVZP9U4');
+                        },
+                        child: Text("test"),
+                        color: Colors.red,
+                      ))
                 ],
               ),
             );
