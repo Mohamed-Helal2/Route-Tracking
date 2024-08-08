@@ -25,12 +25,14 @@ class search_result_view extends StatelessWidget {
                 onTap: () async {
                   // print(
                   //     "<<--- ${context.read<GooglemapCubit>().prediction_resulrt[index].placeId}");
-                  await context.read<GooglemapCubit>().updatetonewsearchlocation(
-                      placeid: context
-                          .read<GooglemapCubit>()
-                          .prediction_resulrt[index]
-                          .placeId!);
-                  
+                  await context
+                      .read<GooglemapCubit>()
+                      .updatetonewsearchlocation(
+                          placeid: context
+                              .read<GooglemapCubit>()
+                              .prediction_resulrt[index]
+                              .placeId!);
+                  //await context.read<GooglemapCubit>().getroutes();
                 },
                 child: ListTile(
                   leading: const Icon(

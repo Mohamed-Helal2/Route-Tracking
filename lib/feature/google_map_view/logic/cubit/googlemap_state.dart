@@ -22,9 +22,14 @@ final class placefailure extends GooglemapState {
 final class placeDetailsLoading extends GooglemapState {}
 
 final class placeDetailsSucess extends GooglemapState {
-   
-
   placeDetailsSucess();
 }
 
 final class placeDetailsFailure extends GooglemapState {}
+
+final class RoutesSucess extends GooglemapState {
+  final RoutesModel routesModel;
+
+  RoutesSucess({required this.routesModel});
+  
+}

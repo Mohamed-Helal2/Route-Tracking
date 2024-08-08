@@ -1,11 +1,16 @@
 import 'package:bloc/bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:meta/meta.dart';
 import 'package:routetracking/core/Service/location_service.dart';
 import 'package:routetracking/core/Service/places_service.dart';
+import 'package:routetracking/core/Service/routes_service.dart';
 import 'package:routetracking/core/helper/douce.dart';
+import 'package:routetracking/model/location_info_model/location_info_mode.dart';
 import 'package:routetracking/model/places_autocomplete_model/prediction.dart';
+import 'package:routetracking/model/routes_model/routes_model.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../model/places_autocomplete_model/places_autocomplete_model.dart';
@@ -21,15 +26,21 @@ class GooglemapCubit extends Cubit<GooglemapState> {
   TextEditingController textEditingController = TextEditingController();
   GoogleMapController? googleMapController;
   Set<Marker> markers = {};
+  Set<Polyline> polyline = {};
   List<Prediction> prediction_resulrt = [];
-  final debouncer = Debouncer(delay: const Duration(milliseconds: 1000));
+  final debouncer = Debouncer(delay: const Duration(milliseconds: 50));
   Uuid uuid = const Uuid();
   String fe = const Uuid().v4();
-
+ RoutesService routesService = RoutesService();
+  LatLng? originlocation;
+  late LatLng destination;
+  // PolylinePoints polylinePoints = PolylinePoints();
   void updatemylocation() async {
     try {
       var locationData = await locationService.getlocation();
       LatLng latLng = LatLng(locationData.latitude!, locationData.longitude!);
+      //  LatlngModel originlocation = LatlngModel.fromjson(latLng);
+      originlocation = latLng;
       setCameraPosition(latLng, 15);
       addmarker(latLng);
     } on LocationServiceException catch (e) {
@@ -86,6 +97,8 @@ class GooglemapCubit extends Cubit<GooglemapState> {
     final response = await placesService.getPlaceDetails(placeid: placeid);
     LatLng latLng = LatLng(response.result!.geometry!.location!.lat!,
         response.result!.geometry!.location!.lng!);
+    destination = latLng;
+    print("-- >> ${response.result}");
     await updatesearchlocation(latLng: latLng);
     fe = uuid.v4();
     emit(placeDetailsSucess());
@@ -93,9 +106,11 @@ class GooglemapCubit extends Cubit<GooglemapState> {
 
   Future<void> updatesearchlocation({required LatLng latLng}) async {
     try {
-      setCameraPosition(latLng, 12);
       addmarker(latLng);
       clearPredictions();
+      getroutes();
+      routesService.setCameraBoubds(googleMapController);
+      // setCameraBoubds();
     } on LocationServiceException catch (e) {
       // TODO
     } on LocationPermissionException catch (e) {
@@ -103,5 +118,54 @@ class GooglemapCubit extends Cubit<GooglemapState> {
     } catch (e) {
       print(e);
     }
+  }
+
+  Future getroutesTest() async {
+    final response = await routesService.getRoutes(
+      origin: LocationInfoModel(
+        locationModel: LocationModel(
+          latlngModel: LatlngModel(
+              latitude: originlocation!.latitude,
+              longitude: originlocation!.longitude),
+        ),
+      ),
+      destination: LocationInfoModel(
+        locationModel: LocationModel(
+          latlngModel: LatlngModel(
+            latitude: 48.24306692515894,
+            longitude: 65.66529030999305,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future getroutes() async {
+    final response = await routesService.getRoutes(
+      origin: LocationInfoModel(
+        locationModel: LocationModel(
+          latlngModel: LatlngModel(
+              latitude: originlocation!.latitude,
+              longitude: originlocation!.longitude),
+        ),
+      ),
+      destination: LocationInfoModel(
+        locationModel: LocationModel(
+          latlngModel: LatlngModel(
+              latitude: destination.latitude, longitude: destination.longitude),
+        ),
+      ),
+    );
+    response.fold(
+      (l) => print("--Error"),
+      (r) {
+        routesService.getrouteData(
+            polypoints: r.routes![0].polyline!.encodedPolyline!,
+            googleMapController: googleMapController!);
+
+        polyline = routesService.polyline;
+        emit(RoutesSucess(routesModel: r));
+      },
+    );
   }
 }

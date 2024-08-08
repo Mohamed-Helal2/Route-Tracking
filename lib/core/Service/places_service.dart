@@ -13,10 +13,10 @@ class PlacesService {
     required String input,
     required String sessionToken
   }) async {
-    final response = await dioConsumer.get('autocomplete/json',
+    final response = await dioConsumer.get(ApiConstants.placeautocomplete,
         queryparams: {"input": input,
         'sessiontoken':sessionToken,
-         "key": ApiConstants.ApiKey});
+        "key": ApiConstants.apiKey});
     PlacesAutocompleteModel placesAutocompleteModel =
         PlacesAutocompleteModel.fromJson(response);
     if (placesAutocompleteModel.status == 'OK') {
@@ -29,8 +29,8 @@ class PlacesService {
   }
 
   Future<PlaceDetailsModel> getPlaceDetails({required String placeid}) async {
-    final response = await dioConsumer.get('details/json',
-        queryparams: {'key': ApiConstants.ApiKey, 'place_id': placeid});
+    final response = await dioConsumer.get(ApiConstants.placedetails,
+        queryparams: {'key': ApiConstants.apiKey, 'place_id': placeid});
     PlaceDetailsModel placeDetailsModel = PlaceDetailsModel.fromJson(response);
     return placeDetailsModel;
   }
