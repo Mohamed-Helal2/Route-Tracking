@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "765754852037",
+    "project_id": "map-22753",
+    "storage_bucket": "map-22753.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765754852037:android:cc8df66856abfd33bb66ac",
+        "android_client_info": {
+          "package_name": "com.example.routetracking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCckFSFtPYrg2kqEVm91sfuaGmPwizeYck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

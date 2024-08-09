@@ -40,7 +40,7 @@ class CustomGoogleMap extends StatelessWidget {
                           //     placeid: 'ChIJQ2IA1xSc4jARPUC_qVZP9U4');
                         },
                         child: Text("test"),
-                        color: Colors.red,
+                        color: Colors.green,
                       ))
                 ],
               ),

@@ -1,0 +1,19 @@
+
+default_platform(:android)
+
+platform :android do
+  desc "Lane for Android App Distribution"
+  lane :firebase_distribution do
+    sh "flutter clean"
+    sh "flutter build apk --release --no-tree-shake-icons"
+    firebase_app_distribution(
+    app: "1:765754852037:android:cc8df66856abfd33bb66ac",
+    upload_timeout: 600,
+    firebase_cli_token:"1//03eFAO8jwnYTGCgYIARAAGAMSNwF-L9IrB0MJKwwQ9fiFoKmrsM5KWRTj6sYVrgvDg562eC8wsM_3k37OTyCPka6Jfd85Jr35ml0",
+    # android_artifact_type: "APK",
+    android_artifact_path:"../build/app/outputs/flutter-apk/app-release.apk",
+    testers: "mohamedahmed90820@gmail.com",
+    release_notes:"Google Map FastLane"
+  )
+  end
+end
